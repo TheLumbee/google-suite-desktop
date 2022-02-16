@@ -1,16 +1,16 @@
 #include "CalendarView.hpp"
 
 #include <QApplication>
-#include <QStandardPaths>
 #include <QMenu>
 #include <QVariant>
 
-CalendarView::CalendarView()
+CalendarView::CalendarView(QWidget* parent /*= nullptr*/) :
+    m_mainWindow(qobject_cast<MainWindow*>(parent))
 {
+    setParent(parent);
     setUrl(QUrl("https://calendar.google.com"));
     InitializeSettings();
     SetupTrayIcon();
-    setWindowTitle(tr("Google Calendar Linux"));
 }
 
 CalendarView::~CalendarView()
@@ -21,8 +21,9 @@ void CalendarView::SetupTrayIcon()
 {
     trayIcon->setIcon(QIcon("Resources/google-calendar-icon.png"));
     QMenu* trayIconMenu = new QMenu(this);
+
     // Action to show/hide WebView
-    QAction* action = trayIconMenu->addAction(m_showWhenStarted ?
+    QAction* action = trayIconMenu->addAction(m_showOnStartup ?
         tr("Hide") : tr("Show"));
 
     // Alternate between show/hide text when triggered and show/hide WebView
@@ -31,12 +32,14 @@ void CalendarView::SetupTrayIcon()
         if (action->text() == tr("Show"))
         {
             setVisible(true);
+            emit CalendarOpened();
             action->setText(tr("Hide"));
         }
 
         else
         {
             setVisible(false);
+            emit CalendarClosed();
             action->setText(tr("Show"));
         }
     });
@@ -47,13 +50,13 @@ void CalendarView::SetupTrayIcon()
     // Set correct setting when action is triggered
     connect(action, &QAction::triggered, this, [=]
     {
-        m_showWhenStarted = !action->isChecked();
-        m_appSettings->setValue("MinimizeToTray", QVariant::fromValue(m_showWhenStarted));
-        m_appSettings->sync();
+        m_showOnStartup = !action->isChecked();
+        m_mainWindow->m_appSettings->setValue("MinimizeToTrayOnStartup", QVariant::fromValue(m_showOnStartup));
+        m_mainWindow->m_appSettings->sync();
     });
 
     action->setCheckable(true);
-    action->setChecked(!m_showWhenStarted);
+    action->setChecked(!m_showOnStartup);
     setVisible(!action->isChecked());
 
     // Action to quit application
@@ -69,24 +72,11 @@ void CalendarView::SetupTrayIcon()
 
 void CalendarView::InitializeSettings()
 {
-    QString iniPath;
-
-#ifdef Q_OS_WIN
-    iniPath = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "",
-        QStandardPaths::LocateDirectory);
-#else
-    iniPath = QStandardPaths::locate(QStandardPaths::HomeLocation, "",
-        QStandardPaths::LocateDirectory);
-#endif //Q_OS_WIN
-
-    m_appSettings = new QSettings(QString("%1/.google-calendar-desktop/AppSettings.ini")
-        .arg(iniPath), QSettings::IniFormat);
-
-    if (!m_appSettings->contains("MinimizeToTray"))
+    if (!m_mainWindow->m_appSettings->contains("MinimizeToTrayOnStartup"))
     {
-        m_appSettings->setValue("MinimizeToTray", QVariant::fromValue(0));
+        m_mainWindow->m_appSettings->setValue("MinimizeToTrayOnStartup", QVariant::fromValue(0));
     }
 
-    m_showWhenStarted = m_appSettings->value("MinimizeToTray").toBool();
-    m_appSettings->sync();
+    m_showOnStartup = m_mainWindow->m_appSettings->value("MinimizeToTrayOnStartup").toBool();
+    m_mainWindow->m_appSettings->sync();
 }

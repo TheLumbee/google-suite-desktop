@@ -8,6 +8,10 @@ INCLUDEPATH += .
 QT += core network opengl webenginecore webenginewidgets widgets
 CONFIG += debug_and_release
 
+MOC_DIR = Moc_Files
+OBJECTS_DIR = Objects_Files
+UI_DIR = Ui_Files
+
 # You can make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # Please consult the documentation of the deprecated API in order to know
@@ -16,10 +20,14 @@ CONFIG += debug_and_release
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += WebView/CalendarView.hpp
+HEADERS += mainwindow.hpp \
+           CalendarView/CalendarView.hpp
 
 SOURCES += main.cpp \
-           WebView/CalendarView.cpp
+           mainwindow.cpp \
+           CalendarView/CalendarView.cpp
+
+FORMS +=   mainwindow.ui
 
 
 

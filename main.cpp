@@ -1,10 +1,11 @@
-#include <QApplication>
+#include "mainwindow.hpp"
 
-#include "WebView/CalendarView.hpp"
+#include <QApplication>
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
-    CalendarView view;
+    MainWindow w;
+    w.resize(1200, 742);
     return app.exec();
 }

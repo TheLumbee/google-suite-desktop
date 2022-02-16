@@ -3,3 +3,7 @@ GCal-Desktop
 .vscode
 release
 debug
+Makefile*
+Moc_Files
+Objects_Files
+Ui_Files
