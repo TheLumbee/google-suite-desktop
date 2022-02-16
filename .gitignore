@@ -1,0 +1,5 @@
+GCal-Desktop
+.qmake.stash
+.vscode
+release
+debug
