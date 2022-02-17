@@ -2,11 +2,15 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QSettings>
+#include <QSystemTrayIcon>
 
 namespace Ui {
 class MainWindow;
 }
+
+class CalendarView;
 
 class MainWindow : public QMainWindow
 {
@@ -20,7 +24,12 @@ public:
 private:
     Ui::MainWindow* ui;
     void InitializeSettings();
+    CalendarView* m_calendar = nullptr;
     void InitializeCalendar();
+    QMenuBar* m_menuBar = nullptr;
+    void InitializeMenuBar();
+    QSystemTrayIcon* m_trayIcon = nullptr;
+    void SetupTrayIcon();
 };
 
 #endif // MAINWINDOW_HPP

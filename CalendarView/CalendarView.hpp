@@ -12,13 +12,10 @@ class CalendarView : public QWebEngineView
 
 public:
     CalendarView(QWidget* parent = nullptr);
-    ~CalendarView();
-    bool IsShownOnStartup() { return m_showOnStartup; }
+    bool m_showOnStartup;
 
 private:
     QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
-    bool m_showOnStartup;
-    void SetupTrayIcon();
     void InitializeSettings();
     MainWindow* m_mainWindow = nullptr;
 
