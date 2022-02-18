@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget* parent) :
     InitializeCalendar();
     SetupTrayIcon();
     InitializeMenuBar();
+    qApp->setQuitOnLastWindowClosed(false);
 }
 
 MainWindow::~MainWindow()
@@ -120,6 +121,12 @@ void MainWindow::SetupTrayIcon()
         }
     });
 
+    // Switch show/hide
+    connect(this, &MainWindow::SwitchShowHide, this, [=]
+    {
+        action->setText(tr("Show"));
+    });
+
     // Action to quit application
     action = trayIconMenu->addAction(tr("Quit"));
     connect(action, &QAction::triggered, this, [=]
@@ -129,4 +136,10 @@ void MainWindow::SetupTrayIcon()
 
     m_trayIcon->setContextMenu(trayIconMenu);
     m_trayIcon->show();
+}
+
+void MainWindow::closeEvent(QCloseEvent* e)
+{
+    Q_UNUSED(e)
+    emit SwitchShowHide();
 }

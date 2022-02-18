@@ -30,6 +30,10 @@ private:
     void InitializeMenuBar();
     QSystemTrayIcon* m_trayIcon = nullptr;
     void SetupTrayIcon();
+    void closeEvent(QCloseEvent* e) override;
+
+signals:
+    void SwitchShowHide();
 };
 
 #endif // MAINWINDOW_HPP
