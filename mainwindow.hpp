@@ -6,9 +6,7 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 
 class CalendarView;
 

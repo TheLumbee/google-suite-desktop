@@ -3,6 +3,7 @@
 #include "ui_mainwindow.h"
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QDesktopServices>
 #include <QScreen>
 #include <QStandardPaths>
@@ -13,6 +14,7 @@ MainWindow::MainWindow(QWidget* parent) :
 {
     ui->setupUi(this);
     setWindowTitle(tr("Google Suite Desktop"));
+    setWindowIcon(QIcon("Resources/google.svg"));
     InitializeSettings();
     m_calendar = new CalendarView(this);
     InitializeCalendar();
@@ -34,13 +36,10 @@ void MainWindow::InitializeSettings()
     QString iniPath;
 
 #ifdef Q_OS_WIN
-    iniPath = QStandardPaths::locate(QStandardPaths::DocumentsLocation, "",
-        QStandardPaths::LocateDirectory);
+    iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #else
-    iniPath = QStandardPaths::locate(QStandardPaths::HomeLocation, "",
-        QStandardPaths::LocateDirectory);
+    iniPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 #endif //Q_OS_WIN
-
     m_appSettings = new QSettings(QString("%1/.google-calendar-desktop/AppSettings.ini")
         .arg(iniPath), QSettings::IniFormat);
 }
@@ -50,12 +49,12 @@ void MainWindow::InitializeCalendar()
     connect(m_calendar, &CalendarView::CalendarOpened, this, &QMainWindow::show);
     connect(m_calendar, &CalendarView::CalendarClosed, this, &QMainWindow::hide);
     setCentralWidget(m_calendar);
-    move(!m_appSettings->contains("WindowPosition") ?
-        QApplication::primaryScreen()->geometry().center() - (rect().center() * 1.5) :
-        m_appSettings->value("WindowPosition").toPoint());
-    resize(!m_appSettings->contains("WindowSize") ?
-        QSize(1200, 742) :
-        m_appSettings->value("WindowSize").toSize());
+    move(m_appSettings->contains("WindowPosition") ? 
+        m_appSettings->value("WindowPosition").toPoint() :
+        QApplication::primaryScreen()->geometry().center() - (rect().center() * 1.5));
+    resize(m_appSettings->contains("WindowSize") ?
+        m_appSettings->value("WindowSize").toSize() :
+        QSize(1200, 742));
     setVisible(m_calendar->m_showOnStartup);
 }
 
