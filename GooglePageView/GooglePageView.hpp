@@ -6,21 +6,20 @@
 #include <QSystemTrayIcon>
 #include <QWebEngineView>
 
-class CalendarView : public QWebEngineView
+class GooglePageView : public QWebEngineView
 {
     Q_OBJECT
 
 public:
-    CalendarView(QWidget* parent = nullptr);
+    GooglePageView(QWidget* parent = nullptr);
     bool m_showOnStartup;
 
 private:
-    QSystemTrayIcon* trayIcon = new QSystemTrayIcon(this);
     void InitializeSettings();
     MainWindow* m_mainWindow = nullptr;
 
 signals:
-    void CalendarClosed();
-    void CalendarOpened();
+    void PageClosed();
+    void PageOpened();
 };
 #endif // CALENDARVIEW_HPP

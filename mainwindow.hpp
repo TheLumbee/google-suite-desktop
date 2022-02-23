@@ -5,10 +5,11 @@
 #include <QMenuBar>
 #include <QSettings>
 #include <QSystemTrayIcon>
+#include <QToolBar>
 
 namespace Ui { class MainWindow; }
 
-class CalendarView;
+class GooglePageView;
 
 class MainWindow : public QMainWindow
 {
@@ -22,10 +23,12 @@ public:
 private:
     Ui::MainWindow* ui;
     void InitializeSettings();
-    CalendarView* m_calendar = nullptr;
-    void InitializeCalendar();
+    GooglePageView* m_googlePage = nullptr;
+    void InitializeGooglePage();
     QMenuBar* m_menuBar = nullptr;
     void InitializeMenuBar();
+    QToolBar* m_toolBar = nullptr;
+    void InitializeToolBar();
     QSystemTrayIcon* m_trayIcon = nullptr;
     void SetupTrayIcon();
     void closeEvent(QCloseEvent* e) override;

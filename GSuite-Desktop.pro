@@ -21,11 +21,11 @@ UI_DIR = Ui_Files
 
 # Input
 HEADERS += mainwindow.hpp \
-           CalendarView/CalendarView.hpp
+           GooglePageView/GooglePageView.hpp
 
 SOURCES += main.cpp \
            mainwindow.cpp \
-           CalendarView/CalendarView.cpp
+           GooglePageView/GooglePageView.cpp
 
 FORMS +=   mainwindow.ui
 
