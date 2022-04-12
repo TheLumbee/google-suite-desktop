@@ -1,10 +1,12 @@
-#ifndef CALENDARVIEW_HPP
-#define CALENDARVIEW_HPP
+#ifndef GOOGLEPAGEVIEW_HPP
+#define GOOGLEPAGEVIEW_HPP
 
-#include "mainwindow.hpp"
+#include "../mainwindow.hpp"
 
 #include <QSystemTrayIcon>
-#include <QWebEngineView>
+#include <QtWebEngineWidgets/qwebengineview.h>
+
+class QWebEngineNotification;
 
 class GooglePageView : public QWebEngineView
 {
@@ -12,11 +14,12 @@ class GooglePageView : public QWebEngineView
 
 public:
     GooglePageView(QWidget* parent = nullptr);
-    bool m_showOnStartup;
+    bool showOnStartup;
 
 private:
     void InitializeSettings();
-    MainWindow* m_mainWindow = nullptr;
+    MainWindow *mainWindow = nullptr;
+    QList<QWebEnginePage*> webPages;
 
 signals:
     void PageClosed();

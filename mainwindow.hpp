@@ -1,13 +1,13 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include "ui_mainwindow.h"
+
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QToolBar>
-
-namespace Ui { class MainWindow; }
 
 class GooglePageView;
 
@@ -18,18 +18,19 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget* parent = nullptr);
     ~MainWindow();
-    QSettings* m_appSettings = nullptr;
+    QSettings* appSettings = nullptr;
+    QSystemTrayIcon* GetTrayIcon() { return trayIcon; }
 
 private:
     Ui::MainWindow* ui;
     void InitializeSettings();
-    GooglePageView* m_googlePage = nullptr;
+    GooglePageView* googlePage = nullptr;
     void InitializeGooglePage();
-    QMenuBar* m_menuBar = nullptr;
+    QMenuBar* menuBar = nullptr;
     void InitializeMenuBar();
-    QToolBar* m_toolBar = nullptr;
+    QToolBar* toolBar = nullptr;
     void InitializeToolBar();
-    QSystemTrayIcon* m_trayIcon = nullptr;
+    QSystemTrayIcon* trayIcon = nullptr;
     void SetupTrayIcon();
     void closeEvent(QCloseEvent* e) override;
 

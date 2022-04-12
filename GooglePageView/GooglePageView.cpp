@@ -1,20 +1,29 @@
 #include "GooglePageView.hpp"
 
 #include <QApplication>
+#include <QDesktopServices>
 #include <QFile>
 #include <QMenu>
-#include <QNetworkCookie>
-#include <QNetworkCookieJar>
+#include <QStandardPaths>
+#include <QtNetwork/qnetworkcookie.h>
+#include <QtNetwork/qnetworkcookiejar.h>
 #include <QVariant>
 #include <QWebEngineCookieStore>
 #include <QWebEngineNewWindowRequest>
+#include <QWebEngineNotification>
 #include <QWebEngineProfile>
 
 GooglePageView::GooglePageView(QWidget* parent /*= nullptr*/) :
-    m_mainWindow(qobject_cast<MainWindow*>(parent))
+    mainWindow(qobject_cast<MainWindow*>(parent))
 {
     setParent(parent);
-    QFile* cookieFile = new QFile("cookieFile");
+    QString cookiePath;
+#ifdef Q_OS_WIN
+    cookiePath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#else
+    cookiePath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+#endif // Q_OS_WIN
+    QFile* cookieFile = new QFile(QString("%1/.google-calendar-desktop/cookieFile.txt").arg(cookiePath));
     cookieFile->open(QIODevice::ReadOnly);
     QWebEngineCookieStore* cookieStore = page()->profile()->cookieStore();
     connect(cookieStore, &QWebEngineCookieStore::cookieAdded, this, [=](const QNetworkCookie& cookie)
@@ -22,8 +31,7 @@ GooglePageView::GooglePageView(QWidget* parent /*= nullptr*/) :
         if (!cookie.isSessionCookie())
         {
             cookieFile->open(QIODevice::WriteOnly | QIODevice::Append);
-            QString text = QString("%1\n").arg(cookie.toRawForm());
-            cookieFile->write(text.toLatin1());
+            cookieFile->write(QString("%1\n").arg(cookie.toRawForm()).toLatin1());
             cookieFile->close();
         }
     });
@@ -39,21 +47,34 @@ GooglePageView::GooglePageView(QWidget* parent /*= nullptr*/) :
     cookieFile->remove();
     setUrl(QUrl("https://mail.google.com"));
     InitializeSettings();
-
     connect(page(), &QWebEnginePage::newWindowRequested, this, [=](QWebEngineNewWindowRequest& request)
     {
-        request.openIn(page());
+        QDesktopServices::openUrl(request.requestedUrl());
+    });
+
+    // Grant permission for notifications
+    connect(page(), &QWebEnginePage::featurePermissionRequested, this, [=](const QUrl& securityOrigin, QWebEnginePage::Feature feature)
+    {
+        if (feature != QWebEnginePage::Notifications)
+            return;
+        page()->setFeaturePermission(securityOrigin, feature, QWebEnginePage::PermissionGrantedByUser);
+    });
+
+    // How to present notifications
+    page()->profile()->setNotificationPresenter([&](std::unique_ptr<QWebEngineNotification> notification)
+    {
+        mainWindow->GetTrayIcon()->showMessage(notification->title(), notification->message(), QSystemTrayIcon::NoIcon);
     });
 }
 
 void GooglePageView::InitializeSettings()
 {
-    if (!m_mainWindow->m_appSettings->contains("ShowOnStartup"))
+    if (!mainWindow->appSettings->contains("ShowOnStartup"))
     {
-        m_mainWindow->m_appSettings->setValue("ShowOnStartup", QVariant(true));
+        mainWindow->appSettings->setValue("ShowOnStartup", QVariant(true));
     }
 
-    m_showOnStartup = m_mainWindow->m_appSettings->value("ShowOnStartup").toBool();
-    m_mainWindow->m_appSettings->sync();
-    setVisible(m_showOnStartup);
+    showOnStartup = mainWindow->appSettings->value("ShowOnStartup").toBool();
+    mainWindow->appSettings->sync();
+    setVisible(showOnStartup);
 }

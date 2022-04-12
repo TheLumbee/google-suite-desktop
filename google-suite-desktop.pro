@@ -3,7 +3,7 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = GSuite-Desktop
+TARGET = google-suite-desktop
 INCLUDEPATH += .
 QT += core network opengl webenginecore webenginewidgets widgets
 CONFIG += debug_and_release
